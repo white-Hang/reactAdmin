@@ -3,13 +3,20 @@ import "./login.less"
 import logo from "./images/logo.png"
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-
+import {reqLogin} from "../../api/index"
 export default class Login extends Component {
         onFinish = (values) => {
             console.log('Received values of form: ', values);
+            const {validateFields}=this.formRef
+            validateFields().then(async(value)=>{
+                const {username,password}=value
+                const result=await reqLogin(username,password)
+                console.log(result,'result')
+            }).catch((err)=>{
+                console.log(err,'err')
+            })  
         }
         validatorPwd=(_,value)=>{
-            console.log(_,value)
             if(!value){
                 return Promise.reject('密码必须输入')
             }else{
@@ -37,7 +44,8 @@ export default class Login extends Component {
                     <Form name="normal_login"
                         className="login-form"
                         initialValues={{ remember: true }}
-                        onFinish={this.onFinish}>
+                        onFinish={this.onFinish}
+                        ref={c=>this.formRef=c}>
                         <Form.Item name="username" rules={[
                             { required: true, message: '用户名必须输入' },
                             { min: 4, message: '用户名至少4位' },
