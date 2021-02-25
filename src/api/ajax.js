@@ -19,12 +19,7 @@ export default function ajax(url,data={},type="GET"){
             promise=axios.post(url,data)
         }
         promise.then((response)=>{
-            if(response.data.status==0){
-                resolve(response)
-            }else{
-                message.error("用户名或者密码错误")
-            }
-            
+                resolve(response)  
         }).catch((err)=>{
             message.error("请求出错了+",err.message)
         })
