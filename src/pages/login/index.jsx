@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import "./login.less"
-import logo from "./images/logo.png"
+import logo from "../../assets/images/logo.png"
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {reqLogin} from "../../api/index"
 import memoryUtils from "../../utils/memoryUtils"
+import store from "../../utils/storageUtil"
+import { Redirect } from 'react-router-dom';
 export default class Login extends Component {
         onFinish = (values) => {
             console.log('Received values of form: ', values);
@@ -13,11 +15,12 @@ export default class Login extends Component {
                 const {username,password}=value
                 const result=await reqLogin(username,password)
                 console.log(result,'result')
-                if(result.data.status===0){
+                if(result.status===0){
                     message.success("登录成功")
                     //保存user
                     const user =result.data
                     memoryUtils.user = user//保存在内存中
+                    store.setUser(user)
                     this.props.history.replace('/')
                 }else{
                     //提示错误信息
@@ -44,6 +47,10 @@ export default class Login extends Component {
             return Promise.resolve()
         }
     render() {
+        const user = memoryUtils.user
+        if(user&&user._id){
+            return <Redirect to="/"/>
+        }
         return (
             <div className="login">
                 <header className="login-header">
