@@ -1,16 +1,22 @@
 import React, { Component } from 'react'
-import {Redirect} from "react-router-dom"
+import {Redirect, Route , Switch} from "react-router-dom"
 import memoryUtils from "../../utils/memoryUtils"
 import { Layout} from 'antd';
 import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
   } from '@ant-design/icons';
 import "./admin.css"
 import LeftNav from "../../components/leftNav"
+import Home from "../home"
+import Category from "../category"
+import Product from "../product"
+import Role from "../role"
+import User from "../user"
+import Bar from "../charts/bar"
+import Line from "../charts/line"
+import Pie from "../charts/pie"
+import Order from "../order"
 const { Header, Sider, Content, Footer } = Layout;
 export default class Admin extends Component {
     state = {
@@ -46,7 +52,18 @@ export default class Admin extends Component {
                   minHeight: 280,
                 }}
               >
-                Content
+              <Switch>
+                <Route path='/home' component={Home}/>
+                <Route path='/category' component={Category}/>
+                <Route path="/product" component={Product}/>
+                <Route path="/role" component={Role}/>
+                <Route path="/user" component={User}/>
+                <Route path="/charts/bar" component={Bar}/>
+                <Route path="/charts/line" component={Line}/>
+                <Route path="/charts/Pie" component={Pie}/>
+                <Route path="/order" component={Order}/>
+                <Redirect to="/home"/> 
+              </Switch>
               </Content>
               <Footer style={{ textAlign: 'center' }}>推荐使用谷歌浏览器，可以获得更佳页面操作体验</Footer>
             </Layout>
