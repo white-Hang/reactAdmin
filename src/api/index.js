@@ -16,18 +16,20 @@ export const reqLogin=(username,password)=>ajax(BASE+'/login',{username,password
  export const reWeather=(city)=>{
      return new Promise((resolve,reject)=>{
         const url=`http://api.map.baidu.com/telematics/v3/weather?location=${city}&output=json&ak=3p49MVra6urFRGOT9s8UBWr2`
+        // const url=`https://restapi.amap.com/v3/weather/weatherInfo?city=${city}&key=6ca7b720f2ab2a48f749c1e19c3d1c47 `
         //发送jsonp请求
         jsonp(url,{},(err,data)=>{
-           console.log(err,data)
-           if(!err&&data.status==="success"){
+           if(!err&&data.status!=="success"){
             // 取出需要的数据
-            const {dayPictureUrl, weather} = data.results[0].weather_data[0]
-            resolve({dayPictureUrl, weather})
+            // const {dayPictureUrl, weather} = data.results[0].weather_data[0]
+            const obj={
+                dayPictureUrl:"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2187720189,605271663&fm=26&gp=0.jpg",
+                weather:"晴天"
+            }
+            resolve(obj)
            }else{
                message.error("获取天气信息失败")
            }
         })
-     })
-     
+     })   
  }
- reWeather('北京')

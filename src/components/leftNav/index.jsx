@@ -51,7 +51,6 @@ import React, {Component} from "react"
             }else{
                 //查找一个与当前请求路径匹配的子item
                 const cItem=item.children.find(cItem=>cItem.key===path)
-                console.log(cItem,'c')
                 if(cItem){
                     this.openKey=item.key
                 }
