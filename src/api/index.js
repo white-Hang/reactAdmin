@@ -9,6 +9,11 @@ const BASE="http://120.55.193.14:5000"
 //登陆
 export const reqLogin=(username,password)=>ajax(BASE+'/login',{username,password},'post')
 
+// 获取一级/二级分类的列表
+export const reCategorys=(parentId)=>ajax(BASE+'/manage/category/list', {parentId})
+
+// 添加分类
+export const reqAddCategory = (categoryName, parentId) => ajax(BASE + '/manage/category/add', {categoryName, parentId}, 'POST')
 /*
     jsonp请求函数
  */

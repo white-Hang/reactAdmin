@@ -12,6 +12,7 @@ import "./header.less"
 import memoryUtils from "../../utils/memoryUtils"
 import store from "../../utils/storageUtil"
 import menuList from '../../config/menuConfig'
+import LinkButton from "../../components/linkButton"
 class Header extends Component {
     state = {
         collapsed: false,
@@ -100,7 +101,7 @@ class Header extends Component {
                     })}
                     <div className="header-top">
                         <span>欢迎，{username}</span>
-                        <button onClick={this.loginOut} className="login-out">退出</button>
+                        <LinkButton onClick={this.loginOut}>退出</LinkButton>
                     </div>
                     
                 </div>
