@@ -1,7 +1,7 @@
 import React , {Component,PureComponent} from "react"
 import { Form, Input, Select,Button,message } from 'antd';
 import PubSub from 'pubsub-js'
-import {reqAddCategory} from "../../api/index"
+import {reqAddCategory,reqUpdateCategory} from "../../api/index"
 const { Option } = Select;
 export default class AddOrupdate extends Component {
     handleOk=()=>{
@@ -10,22 +10,42 @@ export default class AddOrupdate extends Component {
         const {validateFields}=this.formRef
         validateFields().then(async(value)=>{
             const {parentId,categoryName}=value
-            const result=await reqAddCategory(categoryName,parentId)
-            if(result.status===0){
-                message.success("添加成功")
-                 //向父组件传递参数
-                let parentName=""
-                if(parentId!=='0'){
-                    parentName=this.props.categorys.find(item=>item._id===parentId).name
+            if(this.props.isUpdata){
+                const result=await reqAddCategory(categoryName,parentId)
+                if(result.status===0){
+                    message.success("添加成功")
+                    //向父组件传递参数
+                    let parentName=""
+                    if(parentId!=='0'){
+                        parentName=this.props.categorys.find(item=>item._id===parentId).name
+                    }
+                    this.formRef.resetFields()
+                    PubSub.publish("closeDig",{flag:false,success:true,parentId,parentName})
+                }else{
+                    //提示错误信息
+                    this.formRef.resetFields()
+                    PubSub.publish("closeDig",{flag:false,success:false})
+                    message.error("添加失败")
                 }
-                this.formRef.resetFields()
-                PubSub.publish("closeDig",{flag:false,success:true,parentId,parentName})
+            }else{
+                const {categoryId,parentId} = this.props
+                const result=await reqUpdateCategory({categoryName,categoryId})
+                if(result.status===0){
+                    message.success("更新成功")
+                    //向父组件传递参数
+                    let parentName=""
+                    if(parentId!=='0'){
+                        parentName=this.props.categorys.find(item=>item._id===parentId).name
+                    }
+                    this.formRef.resetFields()
+                    PubSub.publish("closeDig",{flag:false,success:true,parentId,parentName})  
             }else{
                 //提示错误信息
                 this.formRef.resetFields()
                 PubSub.publish("closeDig",{flag:false,success:false})
-                message.error("添加失败")
+                message.error("更新失败")
             }
+        }
         }).catch((err)=>{
             console.log(err,'err')
         }) 
@@ -33,11 +53,24 @@ export default class AddOrupdate extends Component {
     handleCancle=()=>{
         // 清除输入数据
         this.formRef.resetFields()
-        PubSub.publish("closeDig",{flag:false})
+        PubSub.publish("closeDig",{flag:false,formRef:this.formRef})
         // this.props.handleCancle(false)
     }
+    componentDidMount(){
+        this.formRef.setFieldsValue({
+            parentId:this.props.parentId
+        })
+        this.props.setForm(this.formRef) 
+    }
+    shouldComponentUpdate(nextProps,nextState){
+        console.log(nextProps,this.props,'props')
+        this.formRef.setFieldsValue({
+            parentId:nextProps.parentId
+        })
+        return true
+    }
     render(){
-        const {categorys,parentId}=this.props
+        const {categorys,parentId,isUpdata}=this.props
         console.log(parentId,'接收')
         return (
             <Form
@@ -45,19 +78,22 @@ export default class AddOrupdate extends Component {
                 wrapperCol={{ span: 14 }}
                 ref={c=>this.formRef=c}
       >
-                <Form.Item
-                name="parentId"
-                label="所属分类"
-                hasFeedback
-                rules={[{ required: true, message: '请选择分类类型' }]}
-            >
-                <Select defaultValue={parentId}>
-                <Option value="0">一级分类</Option>
-               {   
-                    categorys.map(item=><Option value={item._id} key={item._id}>{item.name}</Option>)
-               }
-                </Select>
-            </Form.Item>
+          {
+              isUpdata?
+              <Form.Item
+              name="parentId"
+              label="所属分类"
+              hasFeedback
+              rules={[{ required: true, message: '请选择分类类型' }]}
+          >
+              <Select>
+              <Option value="0">一级分类</Option>
+             {   
+                  categorys.map(item=><Option value={item._id} key={item._id}>{item.name}</Option>)
+             }
+              </Select>
+          </Form.Item>:null
+          }     
             <Form.Item
             label="分类名称"
             name="categoryName"

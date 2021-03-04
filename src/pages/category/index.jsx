@@ -16,6 +16,8 @@ export default class Category extends Component {
         parentId:"0",//当前需要显示的分类列表的父分类ID
         parentName:"",// 当前需要显示的分类列表的父分类名称
         isModalVisible:false,//判断添加和更新分类弹窗是否出现
+        isUpdata:true,
+        categoryId:"",//用于修改的id
     }
     //初始化列头
     initColumns=()=>{
@@ -33,7 +35,7 @@ export default class Category extends Component {
               width:300,
               render: (record) => (
                   <div>
-                    <LinkButton>修改分类</LinkButton>
+                    <LinkButton onClick={()=>this.updataCategorys(record._id)}>修改分类</LinkButton>
                     {this.state.parentId==='0'?<LinkButton onClick={()=>this.getCategorys(record._id,record.name)}>查看子分类</LinkButton>:null}
                   </div>
               ),
@@ -58,7 +60,7 @@ export default class Category extends Component {
     }
     //添加列表数据
     addForm=()=>{
-        this.setState({isModalVisible:true})
+        this.setState({isModalVisible:true,isUpdata:true})
     }
     //状态提升写法，需在子组件上绑定这两个方法
     // handleOk=(flag)=>{
@@ -67,14 +69,19 @@ export default class Category extends Component {
     // handleCancel=(flag)=>{
     //     this.setState({isModalVisible:flag})
     // }
+    updataCategorys=(categoryId)=>{
+        this.setState({isModalVisible:true,isUpdata:false,categoryId})
+    }
     onCancel=()=>{
+        this.form.resetFields()
         this.setState({isModalVisible:false})
     }
     componentDidMount(){
         this.getCategorys()
         //监听子组件传来的数据
         this.token = PubSub.subscribe('closeDig',(_,setFormObj)=>{
-			this.setState({isModalVisible:setFormObj.flag})
+            console.log(setFormObj,'setFormObj')
+			this.setState({isModalVisible:setFormObj.flag,form:setFormObj.formRef})
             if(setFormObj.success){
                 const {parentId,parentName}=setFormObj
                 this.getCategorys(parentId,parentName)
@@ -88,7 +95,7 @@ export default class Category extends Component {
 		PubSub.unsubscribe(this.token)
 	}
     render() {
-        const {loading,categorys,parentId,subCategorys,parentName,isModalVisible} =this.state
+        const {loading,categorys,parentId,subCategorys,parentName,isModalVisible,isUpdata,categoryId} =this.state
         console.log(parentId,'传递')
         const title=parentId==='0'?"一级分类列表":(
             <span>
@@ -102,7 +109,7 @@ export default class Category extends Component {
                      </Button>
         return (
             <div className="category">
-                <Card title={title} extra={addbtn} style={{ width: '100%',height:"100%"}}>
+                <Card title={title} extra={addbtn}>
                     <Table 
                     bordered
                     loading={loading}
@@ -111,7 +118,7 @@ export default class Category extends Component {
                     dataSource={parentId==='0'?categorys:subCategorys} 
                     columns={this.columns} />;
                     <Modal title="添加分类" visible={isModalVisible} footer={null} onCancel={this.onCancel}>
-                        <AddOrupdate categorys={categorys} parentId={parentId}></AddOrupdate>
+                        <AddOrupdate categoryId={categoryId} isUpdata={isUpdata} categorys={categorys} parentId={parentId} setForm={(form)=>this.form=form}></AddOrupdate>
                     </Modal>
                 </Card>
             </div>
