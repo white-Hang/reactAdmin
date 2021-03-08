@@ -5,7 +5,7 @@
 import ajax from "./ajax"
 import jsonp from "jsonp"
 import { message } from "antd"
-const BASE="http://120.55.193.14:5000"
+const BASE=""
 //登陆
 export const reqLogin=(username,password)=>ajax(BASE+'/login',{username,password},'post')
 
@@ -36,6 +36,9 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) =
     pageSize,
     [searchType]: searchName,
   })
+
+// 删除指定名称的图片
+export const reqDeleteImg = (name) => ajax(BASE + '/manage/img/delete', {name}, 'POST')
 /*
     jsonp请求函数
  */
