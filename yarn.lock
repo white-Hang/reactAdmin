@@ -9059,6 +9059,11 @@ pubsub-js@^1.9.3:
   resolved "https://registry.npm.taobao.org/pubsub-js/download/pubsub-js-1.9.3.tgz#674eea4d568d0402e0527cdb10e2aab7b55621d2"
   integrity sha1-Z07qTVaNBALgUnzbEOKqt7VWIdI=
 
+pubsub.js@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/pubsub.js/-/pubsub.js-1.5.2.tgz#f7a6c5e12cabe5b48b24326e2e2d6cd6542f0a4b"
+  integrity sha1-96bF4Syr5bSLJDJuLi1s1lQvCks=
+
 pump@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/pump/-/pump-2.0.1.tgz#12399add6e4cf7526d973cbc8b5ce2e2908b3909"

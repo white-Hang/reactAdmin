@@ -50,7 +50,7 @@ import React, {Component} from "react"
                 ))
             }else{
                 //查找一个与当前请求路径匹配的子item
-                const cItem=item.children.find(cItem=>cItem.key===path)
+                const cItem=item.children.find(cItem=>path.indexOf(cItem.key)===0)
                 if(cItem){
                     this.openKey=item.key
                 }
@@ -75,7 +75,10 @@ import React, {Component} from "react"
     }
       render(){
           //得到当前请求的路径
-          const path=this.props.location.pathname
+          let path=this.props.location.pathname
+          if(path.indexOf("/product")===0){
+                path="/product"
+            }
           const {openKey}=this
           return(
               <div className="left-nav">

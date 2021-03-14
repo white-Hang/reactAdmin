@@ -5,7 +5,7 @@
 import ajax from "./ajax"
 import jsonp from "jsonp"
 import { message } from "antd"
-const BASE="http://120.55.193.14:5000"
+const BASE=""
 //登陆
 export const reqLogin=(username,password)=>ajax(BASE+'/login',{username,password},'post')
 

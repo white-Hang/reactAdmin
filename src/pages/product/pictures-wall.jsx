@@ -14,18 +14,19 @@ export default class PicturesWall extends Component {
         previewVisible: false,
         previewImage: '',
         fileList:[
-            // {
-            //     uid: '-1',
-            //     name: 'image.png',
-            //     status: 'done',
-            //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-            //   },
+            {
+                uid: '-1',
+                name: 'image.png',
+                status: 'done',
+                url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+              },
         ],
         previewTitle: '',
       };
       handleCancel = () => this.setState({ previewVisible: false });
       handleChange = ({ fileList }) => this.setState({ fileList });
       handlePreview = async file => {
+        console.log(file,'file')
         if (!file.url && !file.preview) {
           file.preview = await getBase64(file.originFileObj);
         }
@@ -47,9 +48,11 @@ export default class PicturesWall extends Component {
         return (
             <div>
                  <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    fileList={fileList}
+                    action="manage/img/upload"//上传图片的接口地址
+                    accept="image/*"//只接受图片格式
+                    name="image"//请求参数名
+                    listType="picture-card"//卡片样式
+                    fileList={fileList}//所有已上传图片文件对象的数组
                     onPreview={this.handlePreview}
                     onChange={this.handleChange}
                 >
