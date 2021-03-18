@@ -39,6 +39,9 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) =
 
 // 删除指定名称的图片
 export const reqDeleteImg = (name) => ajax(BASE + '/manage/img/delete', {name}, 'POST')
+
+// 添加/修改商品
+export const reqAddOrUpdateProduct = (product) => ajax(BASE + '/manage/product/' + ( product._id?'update':'add'), product, 'POST')
 /*
     jsonp请求函数
  */

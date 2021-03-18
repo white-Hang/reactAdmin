@@ -4,12 +4,14 @@ import {
     Button,
     Input,
     Card,
-    Cascader
+    Cascader,
+    message
   } from 'antd';
 import { ArrowLeftOutlined} from '@ant-design/icons';
 import LinkButton from "../../components/linkButton"
 import PicturesWall from './pictures-wall'
-import {reCategorys} from "../../api"
+import RichTextEditor from "./richTextEditor"
+import {reCategorys,reqAddOrUpdateProduct} from "../../api"
 const { TextArea } = Input;
 //指定item布局的配置项
 const formItemLayout = {
@@ -20,6 +22,8 @@ export default class AddUpdate extends Component{
     state={
         options:[],
     }
+    pw = React.createRef()
+    editor=React.createRef()
     //验证价格的函数
     validatorPrice=(_,value)=>{
         console.log(value)
@@ -29,8 +33,31 @@ export default class AddUpdate extends Component{
             return Promise.reject('价格必须大于0')
         }
     }
-    onFinish = (values) => {
-        console.log('Received values of form: ', values);
+     onFinish = async(values) => {
+        const imgs = this.pw.current.getImgs()
+        const detail = this.editor.current.getDetail()
+        const {name,desc,price,categoryIds} = values
+        let pCategoryId,categoryId
+        if(categoryIds.length===1){
+            pCategoryId='0'
+            categoryId=categoryIds[0]
+        }else{
+            pCategoryId=categoryIds[0]
+            categoryId=categoryIds[1]
+        }
+        console.log(categoryIds,'categoryIds')
+        const product ={name,desc,price,detail,imgs,pCategoryId,categoryId}
+        if(this.isUpdate){
+            product._id=this.product._id
+        }
+        const result = await reqAddOrUpdateProduct(product)
+        if(result.status===0){
+             message.success(`${this.isUpdate?'更新':'添加'}商品成功！`)
+             this.props.history.goBack()
+        }else{
+            message.success(`${this.isUpdate?'更新':'添加'}商品失败！`)
+        }
+        console.log('Received values of form: ',this.pw.current, values,imgs,detail);
       };
       onChange=()=>{
 
@@ -124,13 +151,13 @@ export default class AddUpdate extends Component{
         const categoryIds = []
         if(isUpdate){
             if(pCategoryId==='0'){
-                categoryIds.push(pCategoryId)
+                categoryIds.push(categoryId)
             }else{
                 categoryIds.push(pCategoryId)
                 categoryIds.push(categoryId)
             }
         }
-        console.log(categoryIds,'categoryIds')
+        console.log(categoryIds,'categoryIds1232131')
         const title= (
             <span>
                 <LinkButton onClick={()=>this.props.history.go(-1)}>
@@ -149,7 +176,7 @@ export default class AddUpdate extends Component{
                     name:product.name,
                     desc:product.desc,
                     price:product.price,
-                    select:categoryIds
+                    categoryIds
                 }}
             >
                 <Form.Item
@@ -175,16 +202,17 @@ export default class AddUpdate extends Component{
                 <Input type="number" placeholder="请输入商品价格" addonAfter="元"/>
                 </Form.Item>
                 <Form.Item
-                    name="select"
+                    name="categoryIds"
                     label="商品分类"
                     rules={[{ required: true, message: '请选择商品分类' }]}
                 >
                     <Cascader placeholder="请选择商品分类" options={options} loadData={this.loadData} onChange={this.onChange}></Cascader>
                 </Form.Item>
                 <Form.Item label="商品图片">
-                    <PicturesWall />
+                    <PicturesWall ref={this.pw} imgs={product.imgs}/>
                 </Form.Item>
-                <Form.Item label="商品详情">
+                <Form.Item label="商品详情" labelCol={{span: 2}} wrapperCol={{span: 20}}>
+                    <RichTextEditor ref={this.editor} detail={product.detail}/>
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit">提交</Button>
